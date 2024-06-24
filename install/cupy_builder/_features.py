@@ -160,6 +160,7 @@ def get_features(ctx: Context) -> Dict[str, Feature]:
         'file': _cuda_files + [
             'cupy_backends.cuda.api.runtime_hip',
             'cupy_backends.cuda.libs.nvtx',
+            'cupy_backends.cuda.libs.nvtx_hip',
             'cupy_backends.cuda.libs.cusolver',
             'cupy_backends.cuda.libs.cusolver_hip',
             'cupyx.cusolver',
@@ -175,7 +176,7 @@ def get_features(ctx: Context) -> Dict[str, Feature]:
             'hiprand/hiprand.h',
             'hipsparse/hipsparse.h' if rocm_version >= 560 else 'hipsparse.h',
             'hipfft/hipfft.h' if rocm_version >= 560 else 'hipfft.h',
-            'roctx.h',
+            'roctracer/roctx.h' if rocm_version >= 560 else 'rocsolver.h',
             'rocsolver/rocsolver.h' if rocm_version >= 560 else 'rocsolver.h',
             'hipsolver/hipsolver.h' if rocm_version >= 560 else 'hipsolver.h',
             'rocblas/rocblas.h' if rocm_version >= 560 else 'rocblas.h',
