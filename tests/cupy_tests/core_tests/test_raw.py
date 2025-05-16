@@ -381,6 +381,10 @@ def compile_in_memory(in_memory):
 
 
 def find_nvcc_ver():
+    # FIXME(HIP): workaround to not fail test error collection
+    # (unittest.skipIf fails with find_nvcc_ver checks)
+    if cupy.cuda.runtime.is_hip:
+      return -1
     nvcc_ver_pattern = r'release (\d+\.\d+)'
     cmd = cupy.cuda.get_nvcc_path().split()
     cmd += ['--version']
