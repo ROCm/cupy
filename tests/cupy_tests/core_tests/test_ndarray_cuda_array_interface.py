@@ -9,7 +9,6 @@ from cupy import testing
 
 # TODO(leofang): test PTDS in this file
 
-
 class DummyObjectWithCudaArrayInterface(object):
 
     def __init__(self, a, ver=3):
@@ -278,6 +277,9 @@ class TestCUDAArrayInterfaceCompliance(unittest.TestCase):
 }))
 class TestCUDAArrayInterfaceStream(unittest.TestCase):
     def setUp(self):
+        if cupy.cuda.runtime.is_hip and self.stream == 'ptds':
+            self.skipTest('HIP does not support PTDS')
+
         if self.stream == 'null':
             self.stream = cupy.cuda.Stream.null
         elif self.stream == 'new':
