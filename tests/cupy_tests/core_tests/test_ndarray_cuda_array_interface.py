@@ -27,7 +27,7 @@ class DummyObjectWithCudaArrayInterface(object):
         }
         if self.ver == 3:
             stream = cupy.cuda.get_current_stream()
-            # Only non-default streams use their actual ptr values. (ROCm)
+            # TODO(ROCm): Reassess: Only non-default streams use their actual ptr values. (ROCm)
             if cupy_backends.cuda.api.runtime.is_hip:
                 desc['stream'] = stream.ptr
             else:
