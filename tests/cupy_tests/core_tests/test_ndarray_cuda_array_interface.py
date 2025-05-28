@@ -277,6 +277,7 @@ class TestCUDAArrayInterfaceCompliance(unittest.TestCase):
 }))
 class TestCUDAArrayInterfaceStream(unittest.TestCase):
     def setUp(self):
+        # TODO(ROCm): Reassess when cuPY supports PTDS with HIP.
         if cupy.cuda.runtime.is_hip and self.stream == 'ptds':
             self.skipTest('HIP does not support PTDS')
 
