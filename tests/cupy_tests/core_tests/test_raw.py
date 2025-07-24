@@ -381,10 +381,6 @@ def compile_in_memory(in_memory):
 
 
 def find_nvcc_ver():
-    # FIXME(HIP): workaround to not fail test error collection
-    # (unittest.skipIf fails with find_nvcc_ver checks)
-    if cupy.cuda.runtime.is_hip:
-      return -1
     nvcc_ver_pattern = r'release (\d+\.\d+)'
     cmd = cupy.cuda.get_nvcc_path().split()
     cmd += ['--version']
@@ -1163,16 +1159,14 @@ void test_grid_sync(const float* x1, const float* x2, float* y, int n) {
 }))
 
 @unittest.skipIf(
-    find_nvcc_ver() >= 12020,
-    "fp16 header compatibility issue, see cupy#8412")
+    cupy.cuda.runtime.is_hip or find_nvcc_ver() >= 12020,
+    "fp16 header compatibility issue, see cupy#8412 (Skip on HIP)")
 @unittest.skipUnless(
     9000 <= cupy.cuda.runtime.runtimeGetVersion(),
     'Requires CUDA 9.x or later')
 @unittest.skipUnless(
     60 <= int(cupy.cuda.device.get_compute_capability()),
     'Requires compute capability 6.0 or later')
-@unittest.skipIf(cupy.cuda.runtime.is_hip,
-                 'Skip on HIP')
 class TestRawGridSync(unittest.TestCase):
 
     def test_grid_sync_rawkernel(self):
