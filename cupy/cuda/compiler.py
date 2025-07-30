@@ -199,6 +199,33 @@ def _get_extra_include_dir_opts():
     )
 
 
+@_util.memoize()
+def _get_hipcc_include_dirs():
+    cmd = ["hipcc", "-x", "hip", "-E", "-v", "/dev/null"]
+    proc = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.PIPE, text=True)
+
+    if proc.returncode != 0:
+        raise RuntimeError(f"Subprocess command '{proc}' failed.")
+
+    matches = re.search(
+        r"#include <\.\.\.> search starts here:\n(.*?)\nEnd of search list.",
+        proc.stderr,
+        re.S,
+    )
+
+    if matches is None:
+        raise RuntimeError(
+            f"Could not find any hipcc default include directories using command: '{cmd}'. Possible errors are changed "
+            f"hipcc output format, or hipcc was not found."
+        )
+
+    include_paths = matches.group(1).splitlines()
+
+    return [
+        include_path.strip() for include_path in include_paths if include_path.strip()
+    ]
+
+
 @_util.memoize(for_each_device=True)
 def _get_arch():
     # See Supported Compile Options section of NVRTC User Guide for
@@ -889,9 +916,16 @@ def _compile_with_cache_hip(source, options, arch, cache_dir, extra_source,
     #   ROCm-Developer-Tools/HIP#2248
     options += ('-fcuda-flush-denormals-to-zero',)
 
+    if 'ROCM_HOME' not in os.environ:
+        warnings.warn(
+            f"ROCM_HOME is not set, querying {_environment.get_hipcc_path()} for JIT include "
+            f"directories",
+            RuntimeWarning,
+            stacklevel=2
+        )
+        options += tuple(f"-I{include_dir}" for include_dir in _get_hipcc_include_dirs())
     # Workaround ROCm 4.3 LLVM_PATH issue in hipRTC #5689
-    rocm_build_version = driver.get_build_version()
-    if rocm_build_version >= 40300000 and rocm_build_version < 40500000:
+    if 40300000 <= driver.get_build_version() < 40500000:
         options += (
             '-I' + get_rocm_path() + '/llvm/lib/clang/13.0.0/include/',)
 
