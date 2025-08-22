@@ -2294,16 +2294,12 @@ cpdef tuple assemble_cupy_compiler_options(tuple options):
                 warnings.warn('CCCL requires c++11 or above')
             break
     else:
-        if _is_hip:
-            options += ('--std=c++14',)
-        else:
-            options += ('-std=c++11',)
+        options += ('--std=c++11',)
 
     # make sure bundled CCCL is searched first
-    if not _is_hip:
-        options = (_get_cccl_include_options()
-                   + options
-                   + ('-I%s' % _get_header_dir_path(),))
+    options = (_get_cccl_include_options()
+               + options
+               + ('-I%s' % _get_header_dir_path(),))
 
     global _cuda_path
     if _cuda_path == '':
