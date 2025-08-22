@@ -2294,7 +2294,10 @@ cpdef tuple assemble_cupy_compiler_options(tuple options):
                 warnings.warn('CCCL requires c++11 or above')
             break
     else:
-        options += ('--std=c++11',)
+        if _is_hip:
+            options += ('--std=c++14',)
+        else:
+            options += ('-std=c++11',)
 
     # make sure bundled CCCL is searched first
     if not _is_hip:
