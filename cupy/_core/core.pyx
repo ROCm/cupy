@@ -2297,9 +2297,10 @@ cpdef tuple assemble_cupy_compiler_options(tuple options):
         options += ('--std=c++11',)
 
     # make sure bundled CCCL is searched first
-    options = (_get_cccl_include_options()
-               + options
-               + ('-I%s' % _get_header_dir_path(),))
+    if not _is_hip:
+        options = (_get_cccl_include_options()
+                   + options
+                   + ('-I%s' % _get_header_dir_path(),))
 
     global _cuda_path
     if _cuda_path == '':
