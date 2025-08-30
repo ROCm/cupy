@@ -55,6 +55,7 @@ from cupy_backends.cuda cimport stream as _stream_module
 from cupy_backends.cuda.api cimport runtime
 from cupy_backends.cuda.libs cimport nvrtc
 
+from cupy.exceptions import ComplexWarning
 
 NUMPY_1x = numpy.__version__ < '2'
 
@@ -678,7 +679,7 @@ cdef class _ndarray_base:
                 warnings.warn(
                     'Casting complex values to real discards the imaginary '
                     'part',
-                    numpy.ComplexWarning)
+                    ComplexWarning)
         else:
             elementwise_copy(self, newarray)
         return newarray
@@ -2287,33 +2288,33 @@ cdef inline str _translate_cucomplex_to_thrust(str source):
     return ''.join(lines)
 
 
-cpdef bint use_default_std(str opt_str):
-    return '-std=' not in opt_str
+cpdef bint use_default_std(tuple options):
+    cdef str opt
+    for opt in options:
+        if ('-std=' in opt) or ('--std=' in opt):
+            return False
+    return True
 
-cpdef tuple get_std_default():
-    if _is_hip:
-        return ('--std=c++14',)
-    return ('--std=c++11',)
-
-cpdef void handleNonDefaultStandard(str opt_str):
-    if _is_hip:
-        major, minor = nvrtc.getVersion()
-        if '-std=c++11' in opt_str and minor == 0 and major == 7:
-            warnings.warn(
-                'hipRTC on ROCm 7.0.0 has a known bug that causes RTC to break when '
-                'the standard is set to c++11. Please use c++14, or wait for ROCm >= 7.0.1'
-            )
-    elif '-std=c++03' in opt_str:
-        warnings.warn('CCCL requires c++11 or above')
+cpdef void warn_on_unsupported_std(tuple options):
+    cdef str opt
+    for opt in options:
+        if _is_hip:
+            major, minor = nvrtc.getVersion()
+            if '-std=c++11' in opt and minor == 0 and major == 7:
+                warnings.warn(
+                    'hipRTC on some ROCm 7.0 builds have a known bug '
+                    'that causes RTC to break when the standard is set '
+                    'to c++11. Please use c++14, or use ROCm > 7.0'
+                )
+        elif '-std=c++03' in opt:
+            warnings.warn('CCCL requires c++11 or above')
 
 
 cpdef tuple assemble_cupy_compiler_options(tuple options):
-    cdef str opt_str = ' '.join(options)
-
-    if use_default_std(opt_str):
-        options += get_std_default()
+    if use_default_std(options):
+        options += ('--std=c++14',)
     else:
-        handleNonDefaultStandard(opt_str)
+        warn_on_unsupported_std(options)
 
     # make sure bundled CCCL is searched first
     options = (_get_cccl_include_options()
