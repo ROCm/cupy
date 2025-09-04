@@ -25,7 +25,8 @@ class TestInstallLibrary:
     @pytest.mark.parametrize('cuda', _get_supported_cuda_versions('cudnn'))
     @testing.slow
     def test_install_cudnn(self, cuda):
-        self._test_install('cudnn', cuda)
+        with pytest.warns(DeprecationWarning):
+            self._test_install('cudnn', cuda)
 
     @pytest.mark.skipif(
         platform.system() == 'Windows',
@@ -33,7 +34,8 @@ class TestInstallLibrary:
     @pytest.mark.parametrize('cuda', _get_supported_cuda_versions('nccl'))
     @testing.slow
     def test_install_nccl(self, cuda):
-        self._test_install('nccl', cuda)
+        with pytest.warns(DeprecationWarning):
+            self._test_install('nccl', cuda)
 
     @pytest.mark.skipif(
         platform.machine() == "aarch64",
@@ -41,17 +43,20 @@ class TestInstallLibrary:
     @pytest.mark.parametrize('cuda', _get_supported_cuda_versions('cutensor'))
     @testing.slow
     def test_install_cutensor(self, cuda):
-        self._test_install('cutensor', cuda)
+        with pytest.warns(DeprecationWarning):
+            self._test_install('cutensor', cuda)
 
     def _test_install(self, library, cuda):
         system = platform.system()
+        arch = platform.machine()
+        qualified_name = f"{system}:{arch}"
         for rec in install_library.library_records[library]:
             if rec['cuda'] != cuda:
                 continue
             version = rec[library]
-            filenames = rec['assets'][system]['filenames']
+            filenames = rec['assets'][qualified_name]['filenames']
             with tempfile.TemporaryDirectory() as d:
-                install_library.install_lib(cuda, d, library)
+                install_library.install_lib(cuda, d, library, arch)
                 self._check_installed(
                     d, cuda, library, version, filenames)
             break
