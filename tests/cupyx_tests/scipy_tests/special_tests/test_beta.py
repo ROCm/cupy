@@ -17,6 +17,10 @@ def _get_logspace_max(dtype):
 
 
 @testing.with_requires('scipy<1.16')
+@pytest.mark.skipif(
+    cupy.cuda.runtime.is_hip and
+    cupy.cuda.runtime.runtimeGetVersion() >= 7_00_00000,
+    reason='The hipRTC compiler throws a SIGFPE during compilation on ROCm 7.0.0')
 class TestBeta:
 
     @pytest.mark.parametrize('function', ['beta', 'betaln'])
