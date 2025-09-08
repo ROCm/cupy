@@ -111,7 +111,6 @@ def _get_pack_kernel(int_type, marker=-32768):
         in_params="raw B arr",
         out_params="raw I out",
         operation=code,
-        options=("--std=c++11",),
     )
 
 
@@ -194,7 +193,6 @@ def _get_distance_kernel(int_type, dist_int_type):
         in_params="raw I y, raw I x",
         out_params="raw F dist",
         operation=operation,
-        options=("--std=c++11",),
     )
 
 
@@ -223,7 +221,6 @@ def _get_aniso_distance_kernel(int_type):
         in_params="raw I y, raw I x, raw F sampling",
         out_params="raw F dist",
         operation=operation,
-        options=("--std=c++11",),
     )
 
 

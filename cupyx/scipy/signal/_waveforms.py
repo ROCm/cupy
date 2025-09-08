@@ -85,7 +85,6 @@ _sawtooth_kernel = cupy.ElementwiseKernel(
     y = out;
     """,
     "_sawtooth_kernel",
-    options=("-std=c++11",),
 )
 
 
@@ -154,7 +153,6 @@ _square_kernel = cupy.ElementwiseKernel(
 
     """,
     "_square_kernel",
-    options=("-std=c++11",),
 )
 
 
@@ -220,7 +218,6 @@ _gausspulse_kernel_F_F = cupy.ElementwiseKernel(
     yI = yenv * cos( 2 * M_PI * fc * t);
     """,
     "_gausspulse_kernel",
-    options=("-std=c++11",),
 )
 
 _gausspulse_kernel_F_T = cupy.ElementwiseKernel(
@@ -231,7 +228,6 @@ _gausspulse_kernel_F_T = cupy.ElementwiseKernel(
     yI = yenv * cos( 2 * M_PI * fc * t);
     """,
     "_gausspulse_kernel",
-    options=("-std=c++11",),
 )
 
 _gausspulse_kernel_T_F = cupy.ElementwiseKernel(
@@ -247,7 +243,6 @@ _gausspulse_kernel_T_F = cupy.ElementwiseKernel(
     yQ = yenv * l_yQ;
     """,
     "_gausspulse_kernel",
-    options=("-std=c++11",),
 )
 
 _gausspulse_kernel_T_T = cupy.ElementwiseKernel(
@@ -263,7 +258,6 @@ _gausspulse_kernel_T_T = cupy.ElementwiseKernel(
     yQ = yenv * l_yQ;
     """,
     "_gausspulse_kernel",
-    options=("-std=c++11",),
 )
 
 
@@ -379,7 +373,6 @@ _chirp_phase_lin_kernel_real = cupy.ElementwiseKernel(
     phase = cos(temp + phi);
     """,
     "_chirp_phase_lin_kernel",
-    options=("-std=c++11",),
 )
 
 _chirp_phase_lin_kernel_cplx = cupy.ElementwiseKernel(
@@ -392,7 +385,6 @@ _chirp_phase_lin_kernel_cplx = cupy.ElementwiseKernel(
     phase = Y(cos(temp + phi), cos(temp + phi + M_PI/2) * -1);
     """,
     "_chirp_phase_lin_kernel",
-    options=("-std=c++11",),
 )
 
 _chirp_phase_quad_kernel = cupy.ElementwiseKernel(
@@ -412,7 +404,6 @@ _chirp_phase_quad_kernel = cupy.ElementwiseKernel(
     phase = cos(temp + phi);
     """,
     "_chirp_phase_quad_kernel",
-    options=("-std=c++11",),
 )
 
 _chirp_phase_log_kernel = cupy.ElementwiseKernel(
@@ -430,7 +421,6 @@ _chirp_phase_log_kernel = cupy.ElementwiseKernel(
     phase = cos(temp + phi);
     """,
     "_chirp_phase_log_kernel",
-    options=("-std=c++11",),
 )
 
 _chirp_phase_hyp_kernel = cupy.ElementwiseKernel(
@@ -448,7 +438,6 @@ _chirp_phase_hyp_kernel = cupy.ElementwiseKernel(
     phase = cos(temp + phi);
     """,
     "_chirp_phase_hyp_kernel",
-    options=("-std=c++11",),
 )
 
 
@@ -597,7 +586,7 @@ __global__ void unit_impulse(const int n, const int iidx, T* out) {
 '''
 
 UNIT_MODULE = cupy.RawModule(
-    code=UNIT_KERNEL, options=('-std=c++11',),
+    code=UNIT_KERNEL,
     name_expressions=[f'unit_impulse<{x}>' for x in TYPE_NAMES])
 
 

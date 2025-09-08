@@ -144,7 +144,6 @@ class _compressed_sparse_matrix(sparse_data._data_matrix,
     _max_arg_reduction_mod = _core.RawModule(
         code=string.Template(_argmax_argmin_code).substitute(
             func='max', op='>'),
-        options=('-std=c++11',),
         name_expressions=['max_arg_reduction<float, int>',
                           'max_arg_reduction<float, long long>',
                           'max_arg_reduction<double, int>',
@@ -153,7 +152,6 @@ class _compressed_sparse_matrix(sparse_data._data_matrix,
     _min_arg_reduction_mod = _core.RawModule(
         code=string.Template(_argmax_argmin_code).substitute(
             func='min', op='<'),
-        options=('-std=c++11',),
         name_expressions=['min_arg_reduction<float, int>',
                           'min_arg_reduction<float, long long>',
                           'min_arg_reduction<double, int>',

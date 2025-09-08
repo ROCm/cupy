@@ -284,7 +284,7 @@ extern "C" __global__ void __launch_bounds__( 64 )
 
 
 UPFIRDN_MODULE = cupy.RawModule(
-    code=UPFIRDN_KERNEL, options=('-std=c++11',),
+    code=UPFIRDN_KERNEL,
     name_expressions=[
         '_cupy_upfirdn1D_float32',
         '_cupy_upfirdn1D_float64',
