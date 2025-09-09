@@ -426,6 +426,8 @@ class TestArrayReductionZeroSize:
 }))
 @pytest.mark.skipif(
     not cupy.cuda.cub.available, reason='The CUB routine is not enabled')
+@pytest.mark.skipif(
+    cupy.cuda.runtime.is_hip, reason='The CUB routine is not enabled on hip')
 class TestCubReduction:
 
     @pytest.fixture(autouse=True)

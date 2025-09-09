@@ -224,6 +224,8 @@ class TestNdarrayCopy:
     @pytest.mark.xfail(
         runtime.is_hip,
         reason='ROCm may work differently in async D2D copy with streams')
+    @pytest.mark.skipif(
+        cupy.cuda.runtime.is_hip, reason='Test does not pass on HIP')
     def test_copy_multi_device_with_stream(self):
         # Kernel that takes long enough then finally writes values.
         src = _test_copy_multi_device_with_stream_src

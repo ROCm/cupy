@@ -14,6 +14,8 @@ from cupy.cuda import memory
 # or not; they don't verify its correctness as it's already extensively covered
 # by existing tests
 @unittest.skipIf(_environment.get_cub_path() is None, 'CUB not found')
+@unittest.skipIf(
+    cupy.cuda.runtime.is_hip, reason='The CUB not currently enabled on hip')
 class CubReductionTestBase(unittest.TestCase):
     """
     Note: call self.can_use() when arrays are already allocated, otherwise
