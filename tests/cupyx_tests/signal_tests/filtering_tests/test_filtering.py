@@ -10,6 +10,8 @@ import cupy
 import cupyx.signal
 import cupyx.scipy.signal
 from cupy import testing
+import unittest
+
 
 
 def linspace_data_gen(start, stop, n, endpoint=False, dtype=numpy.float64):
@@ -45,6 +47,7 @@ def test_firfilter_zi(dtype, filter_len):
     assert cupy.real(gpu_output).dtype == dtype
 
 
+@unittest.skipIf(cupy.cuda.runtime.is_hip, "filtering tests are not available on HIP")
 @pytest.mark.parametrize('dtype', [cupy.float32, cupy.float64])
 @pytest.mark.parametrize("num_samps", [2**14, 2**18])
 @pytest.mark.parametrize("filter_len", [8, 32, 128])
@@ -76,7 +79,7 @@ def freq_shift_cpu(x, freq, fs):
     x = numpy.asarray(x)
     return x * numpy.exp(-1j * 2 * numpy.pi * freq / fs * numpy.arange(x.size))
 
-
+@unittest.skipIf(cupy.cuda.runtime.is_hip, "filtering tests are not available on HIP")
 @pytest.mark.parametrize("dtype", [cupy.float64, cupy.complex128])
 @pytest.mark.parametrize("num_samps", [2**8])
 @pytest.mark.parametrize("freq", numpy.fft.fftfreq(10, 0.1))
@@ -140,6 +143,7 @@ def channelize_poly_cpu(x, h, n_chans):
     return yy
 
 
+@unittest.skipIf(cupy.cuda.runtime.is_hip, "filtering tests are not available on HIP")
 @pytest.mark.skipif(
     cupy.cuda.runtime.runtimeGetVersion() < 11040,
     reason='Requires CUDA 11.4 or greater')
