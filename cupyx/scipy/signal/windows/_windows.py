@@ -67,7 +67,6 @@ _general_cosine_kernel = cupy.ElementwiseKernel(
     w = temp;
     """,
     "_general_cosine_kernel",
-    options=("-std=c++11",),
     loop_prep="const double delta { ( M_PI - -M_PI ) / ( _ind.size() - 1 ) }",
 )
 
@@ -231,9 +230,8 @@ _triang_kernel = cupy.ElementwiseKernel(
     }
     """,
     "_triang_kernel",
-    options=("-std=c++11",),
     loop_prep="const int m { static_cast<int>( 0.5 * _ind.size() ) }; \
-               const bool odd { _ind.size() & 1 };",
+               const bool odd { (_ind.size() & 1) != 0 };",
 )
 
 
@@ -329,10 +327,9 @@ _parzen_kernel = cupy.ElementwiseKernel(
     }
     """,
     "_parzen_kernel",
-    options=("-std=c++11",),
     loop_prep="const double start { 0.5 * -( _ind.size () - 1 ) }; \
                const double den { 1.0 / ( 0.5 * _ind.size () ) }; \
-               const bool odd { _ind.size() & 1 }; \
+               const bool odd { (_ind.size() & 1) != 0 }; \
                double s1 { floor(-0.25 * ( _ind.size () - 1 ) ) }; \
                double s2 { floor(0.25 * ( _ind.size () - 1 ) ) };",
 )
@@ -412,7 +409,6 @@ _bohman_kernel = cupy.ElementwiseKernel(
     }
     """,
     "_bohman_kernel",
-    options=("-std=c++11",),
     loop_prep="const double delta { 2.0 / ( _ind.size() - 1 ) }; \
                const double start { -1.0 + delta };",
 )
@@ -748,7 +744,6 @@ _bartlett_kernel = cupy.ElementwiseKernel(
     }
     """,
     "_bartlett_kernel",
-    options=("-std=c++11",),
     loop_prep="const double N { 1.0 / ( _ind.size() - 1 ) }; \
                const double temp { 0.5 * ( _ind.size() - 1 ) };",
 )
@@ -952,7 +947,6 @@ _tukey_kernel = cupy.ElementwiseKernel(
     }
     """,
     "_tukey_kernel",
-    options=("-std=c++11",),
     loop_prep="const double N { 1.0 / ( _ind.size() - 1 ) }; \
                const int width { static_cast<int>( alpha * \
                    ( _ind.size() - 1 ) * 0.5 ) }",
@@ -1046,7 +1040,6 @@ _barthann_kernel = cupy.ElementwiseKernel(
     w = 0.62 - 0.48 * fac + 0.38 * cos(2.0 * M_PI * fac);
     """,
     "_barthann_kernel",
-    options=("-std=c++11",),
     loop_prep="const double N { 1.0 / ( _ind.size() - 1 ) };",
 )
 
@@ -1204,7 +1197,6 @@ _hamming_kernel = cupy.ElementwiseKernel(
     w = 0.54 - 0.46 * cos(2.0 * M_PI * i * N);
     """,
     "_hamming_kernel",
-    options=("-std=c++11",),
     loop_prep="const double N { 1.0 / ( _ind.size() - 1 ) };",
 )
 
@@ -1299,7 +1291,6 @@ _kaiser_kernel = cupy.ElementwiseKernel(
         cyl_bessel_i0( beta );
     """,
     "_kaiser_kernel",
-    options=("-std=c++11",),
     loop_prep="const double alpha { 0.5 * ( _ind.size() - 1 ) };",
 )
 
@@ -1432,7 +1423,6 @@ _gaussian_kernel = cupy.ElementwiseKernel(
     w = exp( - ( n * n ) / sig2 );
     """,
     "_gaussian_kernel",
-    options=("-std=c++11",),
     loop_prep="const double sig2 { 2.0 * std * std };",
 )
 
@@ -1507,7 +1497,6 @@ _general_gaussian_kernel = cupy.ElementwiseKernel(
     w = exp( -0.5 * pow( abs( n / sig ), 2.0 * p ) );
     """,
     "_general_gaussian_kernel",
-    options=("-std=c++11",),
 )
 
 
@@ -1604,9 +1593,8 @@ _chebwin_kernel = cupy.ElementwiseKernel(
     }
     """,
     "_chebwin_kernel",
-    options=("-std=c++11",),
     loop_prep="const double N { M_PI * ( 1.0 / _ind.size() ) }; \
-               const bool odd { _ind.size() & 1 };",
+               const bool odd { (_ind.size() & 1) != 0 };",
 )
 
 
@@ -1742,7 +1730,6 @@ _cosine_kernel = cupy.ElementwiseKernel(
     w = sin( M_PI / _ind.size() * ( i + 0.5 ) );
     """,
     "_cosine_kernel",
-    options=("-std=c++11",),
 )
 
 
@@ -1813,7 +1800,6 @@ _exponential_kernel = cupy.ElementwiseKernel(
     w = exp( -abs( i - center ) / tau );
     """,
     "_exponential_kernel",
-    options=("-std=c++11",),
 )
 
 
@@ -1931,7 +1917,6 @@ _taylor_kernel = cupy.ElementwiseKernel(
     out *= scale;
     """,
     "_taylor_kernel",
-    options=("-std=c++11",),
     loop_prep="const double mod_pi { 2.0 * M_PI / _ind.size() }",
 )
 
