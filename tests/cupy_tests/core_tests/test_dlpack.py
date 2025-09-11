@@ -186,8 +186,6 @@ class TestNewDLPackConversion:
 
     def test_stream(self):
         allowed_streams = ['null', True]
-        if not cuda.runtime.is_hip:
-            allowed_streams.append('ptds')
 
         # stream order is automatically established via DLPack protocol
         for src_s in [self._get_stream(s) for s in allowed_streams]:

@@ -733,7 +733,7 @@ class DummyObjectWithCudaArrayInterface(object):
         if self.stream is not None:
             if self.stream is cuda.Stream.null:
                 desc['stream'] = cuda.runtime.streamLegacy
-            elif (not cuda.runtime.is_hip) and self.stream is cuda.Stream.ptds:
+            elif self.stream is cuda.Stream.ptds:
                 desc['stream'] = cuda.runtime.streamPerThread
             else:
                 desc['stream'] = self.stream.ptr
