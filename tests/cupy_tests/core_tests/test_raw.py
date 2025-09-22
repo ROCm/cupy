@@ -396,6 +396,20 @@ def find_nvcc_ver():
 
 
 # TODO(leofang): Further refactor the test suite to avoid using unittest?
+def _rocm_version_major():
+    if not getattr(cupy.cuda.runtime, "is_hip", False):
+        return -1
+
+    version = cupy.cuda.runtime.runtimeGetVersion()
+    major = version // 10_000_000
+    return int(major)
+
+
+_ROCM_VER_MAJOR = _rocm_version_major()
+_IS_HIP_7 = bool(_ROCM_VER_MAJOR != -1 and int(_ROCM_VER_MAJOR) == 7)
+
+@unittest.skipIf(_IS_HIP_7, "test_raw.py alters global state. Access to the global random number "
+                            "generator on device 0/1 is often met with CURAND_STATUS_LAUNCH_FAILURE.")
 class _TestRawBase:
 
     _nvcc_ver = None
