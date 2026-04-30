@@ -562,14 +562,20 @@ def bincount(x, weights=None, minlength=None):
         for accelerator in _accelerator.get_routine_accelerators():
             # CUB uses int for bin counts
             # TODO(leofang): support >= 2^31 elements in x?
-            if (not runtime.is_hip
-                    and accelerator == _accelerator.ACCELERATOR_CUB
+            if (accelerator == _accelerator.ACCELERATOR_CUB
                     and x.size <= 0x7fffffff and size <= 0x7fffffff):
+                # HIP path needs uint64 buffer (rocPRIM atomic_add).
+                if runtime.is_hip:
+                    b = b.astype(numpy.uint64, copy=False)
                 out = cub.cub_histogram(x, b, size+1)
                 if out is None:
+                    if runtime.is_hip:
+                        b = b.astype(numpy.intp, copy=False)
                     continue
                 else:
                     b = out
+                    if runtime.is_hip:
+                        b = b.astype(numpy.intp, copy=False)
                     break
         else:
             _bincount_kernel(x, b)

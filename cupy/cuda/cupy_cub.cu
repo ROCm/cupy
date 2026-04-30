@@ -1055,15 +1055,17 @@ struct _cub_histogram_even {
     void operator()(void* workspace, size_t& workspace_size, void* input, void* output,
         int& n_bins, int& lower, int& upper, size_t n_samples, cudaStream_t s) const
     {
-        #ifndef CUPY_USE_HIP
         // Ugly hack to avoid specializing numerical types
         typedef typename std::conditional<std::is_integral<sampleT>::value, sampleT, int>::type h_sampleT;
         int num_samples = n_samples;
+        #ifndef CUPY_USE_HIP
         static_assert(sizeof(long long) == sizeof(intptr_t), "not supported");
         CUPY_CUB_TRY(DeviceHistogram::HistogramEven(workspace, workspace_size, static_cast<h_sampleT*>(input),
             static_cast<long long*>(output), n_bins, lower, upper, num_samples, s));
         #else
-        throw std::runtime_error("HIP is not supported yet");
+        // HIP: output buffer must be uint64 (no long-long atomic_add).
+        CUPY_CUB_TRY(DeviceHistogram::HistogramEven(workspace, workspace_size, static_cast<h_sampleT*>(input),
+            static_cast<unsigned long long*>(output), n_bins, lower, upper, num_samples, s));
         #endif
     }
 };
@@ -1201,10 +1203,8 @@ size_t cub_device_histogram_range_get_workspace_size(void* x, void* y, int n_bin
 void cub_device_histogram_even(void* workspace, size_t& workspace_size, void* x, void* y,
     int n_bins, int lower, int upper, size_t n_samples, cudaStream_t stream, int dtype_id)
 {
-    #ifndef CUPY_USE_HIP
     return dtype_dispatcher(dtype_id, _cub_histogram_even(),
                             workspace, workspace_size, x, y, n_bins, lower, upper, n_samples, stream);
-    #endif
 }
 
 size_t cub_device_histogram_even_get_workspace_size(void* x, void* y, int n_bins,

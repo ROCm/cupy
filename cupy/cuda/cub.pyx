@@ -5,7 +5,6 @@
 from cpython cimport sequence
 from libc.stdint cimport intptr_t
 
-from cupy_backends.cuda.api cimport runtime
 from cupy._core.core cimport _internal_ascontiguousarray
 from cupy._core.internal cimport _contig_axes, is_in
 from cupy.cuda cimport common
@@ -336,8 +335,7 @@ def device_histogram(_ndarray_base x, _ndarray_base y, bins):
     else:
         n_bins = bins
         is_even = True
-        if runtime._is_hip_environment:
-            raise RuntimeError("not supported yet")
+        # HIP: caller must pre-cast output buffer to uint64 (rocPRIM atomic_add).
         if x.dtype.kind not in 'bui':
             raise ValueError("only integer input is supported")
     assert y.size == n_bins - 1
